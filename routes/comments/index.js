@@ -2,21 +2,21 @@ const commentsRouter = require('express').Router({ mergeParams: true })
 const Posts = require('../../data/db');
 
 // Get comments for a post by id
-commentsRouter.get('/api/posts/:id/comments', (req, res) => {
-    Posts.findPostComments(req.params.id)
+commentsRouter.get('/api/posts/:id/comments', async (req, res) => {
+    await Posts.findPostComments(req.params.id)
         .then(post => {
             if (post) {
-                res.status(200).json(post);
+                res.status(200).json({ success: true, post });
             } else {
                 res
                     .status(404)
-                    .json({ message: 'The post with the specified ID does not exist.' });
+                    .json({ success: false, message: 'The post with the specified ID does not exist.' });
             }
         })
         .catch(() => {
             res
                 .status(500)
-                .json({ errorMessage: 'The comments information could not be retrieved.' });
+                .json({ success: false, errorMessage: 'The comments information could not be retrieved.' });
         });
 });
 
