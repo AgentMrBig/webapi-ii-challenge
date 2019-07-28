@@ -21,28 +21,29 @@ commentsRouter.get('/api/posts/:id/comments', (req, res) => {
 });
 
 // Post(insert) new comment to post
-commentsRouter.post('/api/posts/:id/comments', (req, res) => {
+commentsRouter.post('/api/posts/:id/comments', async (req, res) => {
+    const post_id = req.params.id;
     const { text } = req.body;
 
     if (!text) {
         res
             .status(400)
-            .json({ errorMessage: 'Please provide text for the comment.' })
+            .json({ success: false, errorMessage: 'Please provide text for the comment.' })
     } else {
-        Posts.insertComment(req.params.id)
-            .then(post => {
-                if (post) {
-                    res.status(200).json(post);
+        await Posts.insertComment({ text, post_id })
+            .then(comment => {
+                if (comment) {
+                    res.status(200).json({ success: true, comment });
                 } else {
                     res
                         .status(404)
-                        .json({ message: 'The post with the specified ID does not exist.' });
+                        .json({ success: false, message: 'The post with the specified ID does not exist.' });
                 }
             })
-            .catch(() => {
+            .catch((error) => {
                 res
                     .status(500)
-                    .json({ errorMessage: `There was an error while saving the comment to the database. ${res.status}` });
+                    .json({ success: false, errorMessage: `There was an error while saving the comment to the database. post id: ${req.params.id} comment text: ${req.body.text} error: ${error}` });
             });
     }
 

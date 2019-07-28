@@ -2,8 +2,8 @@ const postsRouter = require('express').Router({ mergeParams: true })
 const Posts = require('../../data/db');
 
 // Get posts
-postsRouter.get('/api/posts', (req, res) => {
-    Posts.find()
+postsRouter.get('/api/posts', async (req, res) => {
+    await Posts.find()
         .then(posts => {
             res.status(200).json(posts);
         })
@@ -57,7 +57,7 @@ postsRouter.post('/api/posts', (req, res) => {
 });
 
 // Put(update) post by id
-postsRouter.put('/api/users/:id', (req, res) => {
+postsRouter.put('/api/posts/:id', (req, res) => {
     const { title, contents } = req.body;
 
     if (!title || !contents) {
